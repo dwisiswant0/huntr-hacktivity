@@ -6,8 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  MY_SCREEN_NAME: huntr.dev hacktivity
-  MY_LANGUAGE: en
   CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
   CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -22,15 +20,11 @@ jobs:
         uses: actions/checkout@master
 
       - name: Install dependencies
-        run: |
-          sudo apt install curl jq nkf openssl -y
-          sudo wget https://raw.githubusercontent.com/piroor/tweet.sh/trunk/tweet.sh -O /usr/bin/tweet
-          sudo chmod +x /usr/bin/tweet
+        run: sudo apt install curl jq -y
 
       - name: Tweet...
         id: tweet
         run: |
-          tweet post "$(date)"
           bash main.sh
           echo "::set-output name=log::$(git status -s | wc -l)"
 

@@ -12,7 +12,6 @@ env:
   CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-  DEBUG: 1
 
 jobs:
   tweet:
@@ -31,6 +30,7 @@ jobs:
       - name: Tweet...
         id: tweet
         run: |
+          tweet post "$(date)"
           bash main.sh
           echo "::set-output name=log::$(git status -s | wc -l)"
 

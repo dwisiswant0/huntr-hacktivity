@@ -53,6 +53,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 	CONTENT="${TITLE} reported by @${REPORTER} - Patch: ${PATCH}\n${LINK} #bugbounty #opensource"
 
 	echo -e "Tweeting: ${CONTENT}"
-	echo -e "${CONTENT}" | ./tweet
-	echo "${ID}" >> "${LOG}"
+	TWEET="$(echo -e "${CONTENT}" | ./tweet)"
+	[[ "${TWEET}" =~ "error" ]] && echo "${TWEET}" || echo "${ID}" >> "${LOG}"
+	echo
 done

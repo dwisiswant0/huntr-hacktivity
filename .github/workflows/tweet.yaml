@@ -1,0 +1,45 @@
+name: "Tweet Hacktivities"
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+env:
+  MY_SCREEN_NAME: huntr.dev hacktivity
+  MY_LANGUAGE: en
+  CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+  CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+
+jobs:
+  tweet:
+    name: Tweet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+
+      - name: Install dependencies
+        run: |
+          sudo apt install curl jq nkf openssl -y
+          sudo wget https://raw.githubusercontent.com/piroor/tweet.sh/trunk/tweet.sh -O /usr/bin/tweet
+          sudo chmod +x /usr/bin/tweet
+
+      - name: Tweet...
+        id: tweet
+        run: |
+          bash main.sh
+          echo "::set-output name=log::$(git status -s | wc -l)"
+
+      - name: Update log
+        if: steps.tweet.outputs.log > 0
+        run: |
+          git config --local user.email "me@dw1.io"
+          git config --local user.name "Dwi Siswanto"
+
+          echo "Committing changes..."
+          git add .
+          git commit -m "Auto generated log [$(date)] :robot:"
+          git push origin ${{ github.ref }}

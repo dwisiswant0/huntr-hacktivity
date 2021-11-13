@@ -52,7 +52,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	CONTENT="${TITLE} reported by @${REPORTER} - Patch: ${PATCH}\n${LINK} #bugbounty #opensource"
 
-	echo -e "Tweeting: ${CONTENT}"
+	echo -e "Tweeting: ${CONTENT}\n"
 	/usr/bin/tweet post "${CONTENT}"
 	echo "${ID}" >> "${LOG}"
 done

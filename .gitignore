@@ -1,2 +1,4 @@
 tweet.client.key
 .tweet.client.key
+go.*
+*.go

@@ -25,6 +25,10 @@ function getDisclosures() {
 # 	graphql "$(cat payloads/GetVulnerability.json | sed "s/VULNERABILITY_ID/${1}/g")"
 # }
 
+function getUser() {
+	graphql "$(cat payloads/GetUser.json | sed "s/USER_ID/${1}/g")"
+}
+
 echo -n "Getting hacktivities... "
 DISCLOSURES=$(getDisclosures)
 COUNT=$(parse "${DISCLOSURES}" ".data.query.items | length")
@@ -44,13 +48,17 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	REPO="https://github.com/$(parse "${DATA}" ".repository.owner")/$(parse "${DATA}" ".repository.name")"
 	PATCH="${REPO}/commit/$(parse "${DATA}" ".patch_commit_sha")"
-	REPORTER="$(parse "${DATA}" ".disclosure.activity.user.preferred_username")"
+
+	USER="$(getUser "$(parse "${DATA}" ".disclosure.activity.user.id")")"
+
+	REPORTER="$(parse "${USER}" ".data.query.settings.twitter")"
+	[[ "${REPORTER}" != "null" ]] && REPORTER="@${REPORTER}" || REPORTER="$(parse "${DATA}" ".disclosure.activity.user.preferred_username")"
 
 	LINK="https://huntr.dev/bounties/${ID}/"
 	TITLE="${CWE} in ${REPO}"
 	# [[ "${CVE}" != "null" ]] && TITLE+=" (${CVE})"
 
-	CONTENT="${TITLE} reported by @${REPORTER} - Patch: ${PATCH}\n${LINK} #bugbounty #opensource"
+	CONTENT="${TITLE} reported by ${REPORTER} - Patch: ${PATCH}\n${LINK} #bugbounty #infosec #opensource"
 
 	echo -e "Tweeting: ${CONTENT}"
 	TWEET="$(echo -e "${CONTENT}" | ./tweet)"

@@ -42,7 +42,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	echo -e "Processing disclosure ${ID}..."
 
-	# CVE="$(parse "${DATA}" ".cve_id")"
+	CVE="$(parse "${DATA}" ".cve_id")"
 	CWE="$(parse "${DATA}" ".cwe.description")"
 	[[ -z "${CWE}" ]] && CWE="$(parse "${DATA}" ".cwe.title")"
 
@@ -56,7 +56,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	LINK="https://huntr.dev/bounties/${ID}/"
 	TITLE="${CWE} in ${REPO}"
-	# [[ "${CVE}" != "null" ]] && TITLE+=" (${CVE})"
+	[[ "${CVE}" != "null" ]] && TITLE+=" (${CVE})"
 
 	CONTENT="${TITLE} reported by ${REPORTER} - Patch: ${PATCH}\n${LINK} #bugbounty #infosec #opensource"
 

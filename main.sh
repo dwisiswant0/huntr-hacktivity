@@ -44,7 +44,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	CVE="$(parse "${DATA}" ".cve_id")"
 	CWE="$(parse "${DATA}" ".cwe.description")"
-	[[ -z "${CWE}" ]] && CWE="$(parse "${DATA}" ".cwe.title")"
+	[[ "${CWE}" == "null" || "${CWE}" == "" ]] && CWE="$(parse "${DATA}" ".cwe.title")"
 
 	REPO="https://github.com/$(parse "${DATA}" ".repository.owner")/$(parse "${DATA}" ".repository.name")"
 	PATCH="${REPO}/commit/$(parse "${DATA}" ".patch_commit_sha")"

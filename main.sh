@@ -52,7 +52,11 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 	USER="$(getUser "$(parse "${DATA}" ".disclosure.activity.user.id")")"
 
 	REPORTER="$(parse "${USER}" ".data.query.settings.twitter")"
-	[[ "${REPORTER}" != "null" ]] && REPORTER="@${REPORTER}" || REPORTER="$(parse "${DATA}" ".disclosure.activity.user.preferred_username")"
+	if [[ "${REPORTER}" != "null" ]] && [[ "${REPORTER}" != "" ]]; then
+		REPORTER="@${REPORTER}"
+	else
+		REPORTER="$(parse "${DATA}" ".disclosure.activity.user.preferred_username")"
+	fi
 
 	LINK="https://huntr.dev/bounties/${ID}/"
 	TITLE="${CWE} in ${REPO}"

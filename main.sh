@@ -48,6 +48,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	REPO="https://github.com/$(parse "${DATA}" ".repository.owner")/$(parse "${DATA}" ".repository.name")"
 	PATCH="${REPO}/commit/$(parse "${DATA}" ".patch_commit_sha")"
+	[[ "${PATCH^^}" == *N/A ]] && PATCH="N/A"
 
 	USER="$(getUser "$(parse "${DATA}" ".disclosure.activity.user.id")")"
 

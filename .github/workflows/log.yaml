@@ -1,0 +1,31 @@
+name: "Refresh log file"
+
+on:
+  schedule:
+    - cron: "30 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  tweet:
+    name: Log
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+
+      - name: Refresh log
+        id: refresh
+        run: |
+          echo "$(tail -n 150 log.txt)" > log.txt
+          echo "::set-output name=log::$(git status -s | wc -l)"
+
+      - name: Update log
+        if: steps.refresh.outputs.log > 0
+        run: |
+          git config --local user.email "me@dw1.io"
+          git config --local user.name "Dwi Siswanto"
+
+          echo "Committing changes..."
+          git add .
+          git commit -m "Refresh log [$(date)] :robot:"
+          git push origin ${{ github.ref }}

@@ -54,7 +54,7 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 
 	REPORTER="$(parse "${USER}" ".data.query.settings.twitter")"
 	if [[ "${REPORTER}" != "null" ]] && [[ "${REPORTER}" != "" ]]; then
-		REPORTER="@${REPORTER}"
+		REPORTER="@$(sed 's/^@//' <(echo "${REPORTER}"))"
 	else
 		REPORTER="$(parse "${DATA}" ".disclosure.activity.user.preferred_username")"
 	fi

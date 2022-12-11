@@ -43,11 +43,12 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 	echo -e "Processing disclosure ${ID}..."
 
 	CVE="$(parse "${DATA}" ".cve_id")"
+	[[ "${CVE}" == "null" ]] && CVE=""
 	CWE="$(parse "${DATA}" ".cwe.description")"
 	[[ "${CWE}" == "null" || "${CWE}" == "" ]] && CWE="$(parse "${DATA}" ".cwe.title")"
 
-	REPO="https://github.com/$(parse "${DATA}" ".repository.owner")/$(parse "${DATA}" ".repository.name")"
-	PATCH="${REPO}/commit/$(parse "${DATA}" ".patch_commit_sha")"
+	REPO="$(parse "${DATA}" ".repository.owner")/$(parse "${DATA}" ".repository.name")"
+	PATCH="https://github.com/${REPO}/commit/$(parse "${DATA}" ".patch_commit_sha")"
 	[[ "${PATCH^^}" == *N/A ]] && PATCH="N/A"
 
 	USER="$(getUser "$(parse "${DATA}" ".disclosure.activity.user.id")")"
@@ -59,14 +60,10 @@ for (( i = 0; i <= $COUNT-1; i++ )); do
 		REPORTER="$(parse "${DATA}" ".disclosure.activity.user.preferred_username")"
 	fi
 
-	LINK="https://huntr.dev/bounties/${ID}/"
-	TITLE="${CWE} in ${REPO}"
-	[[ "${CVE}" != "null" ]] && TITLE+=" (${CVE})"
-
-	CONTENT="${TITLE} reported by ${REPORTER} - Patch: ${PATCH}\n${LINK} #bugbounty #infosec #opensource"
-
-	echo -e "Tweeting: ${CONTENT}"
-	TWEET="$(echo -e "${CONTENT}" | ./tweet)"
-	[[ "${TWEET}" =~ "error" ]] && echo "${TWEET}" || echo "${ID}" >> "${LOG}"
+	TWEET="$(./tweet -author="${REPORTER}" -cve="${CVE}" -cwe="${CWE}" -id="${ID}" -patch="${PATCH}" -repo="${REPO}")"
+	[[ $? -ne 0 ]] && echo -e "${TWEET}" || {
+		echo "OK!"
+		echo "${ID}" >> "${LOG}"
+	}
 	echo
 done
